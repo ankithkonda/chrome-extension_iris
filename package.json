@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UQ-UQx/lti_base_php.git"
+    "url": "git+https://github.com/ankithkonda/chrome-extension_iris.git"
   },
   "keywords": [
     "Chrome Extension",
@@ -26,10 +26,11 @@
   "dependencies": {
     "blueimp-file-upload": "^9.12.1",
     "bootstrap": "^3.3.6",
-    "jquery": "^2.2.2",
-    "jquery-knob": "^1.2.11",    
     "font-awesome": "^4.5.0",
+    "jquery": "^2.2.2",
+    "jquery-knob": "^1.2.11",
     "jquery-ui": "^1.10.5",
+    "lodash": "^4.16.3",
     "mathjs": "^3.2.1",
     "twbs-pagination": "^1.3.1",
     "underscore": "^1.8.3"

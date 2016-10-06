@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "Iris URL tracker",
+  "version": "0.0.1",
+  "description": "Tracks the number of times a URL has been accessed",
+  "author": "Ankith Konda <ankith.konda@gmail.com>",
+  "icons": {
+    "128": "icon.png",
+    "256": "icon.png"
+  },
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Iris: URL Tracker",      // optional; shown in tooltip
+    "default_popup": "popup.html" 
+  },
+  "background": {
+    "persistent": true,
+    "scripts": ["build/js/background.js"]
+
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "alarms",
+    "tabs",
+    "webNavigation",
+    "storage",
+    "*://*.google.com/","<all_urls>", "webRequest", "activeTab", "idle"
+   ]
+}

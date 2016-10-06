@@ -2,7 +2,7 @@ module.exports = function(grunt){
 
     grunt.initConfig({
         concurrent:{
-            app:["browserify:run", "watch:js_ugly", "watch:scss_bundle"],
+            app:["browserify:run", "watch"],
             options: {
                 logConcurrentOutput: true
             }
@@ -10,12 +10,14 @@ module.exports = function(grunt){
         browserify: {
             init:{
                 files: {
-                  'build/js/app.js': ['www/js/app.js']
+                  'app/build/js/popup.js': ['www/js/popup.js'],
+                  'app/build/js/background.js': ['www/js/background.js']
                 }
             },
             run: {
                 files: {
-                  'build/js/app.js': ['www/js/app.js']
+                  'app/build/js/app.js': ['www/js/app.js'],
+                  'app/build/js/background.js': ['www/js/background.js']
                 },
                 options:{
                     watch: true,
@@ -29,25 +31,28 @@ module.exports = function(grunt){
                 files:["www/sass/**/*.scss"],
                 tasks:["sass"]
             },
-            js_ugly:{
-                files:["build/js/app.js"],
-                tasks:["uglify:js"]
+            popupjs_ugly:{
+                files:["app/build/js/popup.js"],
+                tasks:["uglify:popupjs"]
             },
-            // dev_reload:{
-            //     files:["build/js/app.js", "build/css/app.css"],
-            //     options: {
-            //       livereload: {
-            //         host: 'localhost',
-            //       }
-            //     }
-            // },
+            backjs_ugly:{
+                files:["app/build/js/background.js"],
+                tasks:["uglify:backjs"]
+            }
         },
         uglify: {
-            js: {
+            popupjs: {
               files: {
-                'build/js/app.min.js': ['build/js/app.js']
+                'app/build/js/popup.min.js': ['app/build/js/popup.js']
+              }
+            },
+            backjs: {
+              files: {
+                'app/build/js/background.min.js': ['app/build/js/background.js']
+
               }
             }
+
         },
         sass: {
             options:{
@@ -55,7 +60,7 @@ module.exports = function(grunt){
             },
             dist: {
                 files: {
-                    'build/css/app.min.css': 'www/sass/main.scss',
+                    'app/build/css/popup.min.css': 'www/sass/main.scss',
                 }
             }
         }
@@ -68,6 +73,6 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-sass');
 
     grunt.registerTask('run', ["browserify:init","sass:dist","concurrent:app"]);
-    grunt.registerTask('build', ["browserify:init","sass:dist","uglify:js"]);
+    grunt.registerTask('build', ["browserify:init","sass:dist","uglify"]);
 
 }
