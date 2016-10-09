@@ -1,74 +1,98 @@
 module.exports = {
 
-    getWatchList: function(){
+    getWatchList: function(callback){
 
-    	return getWatchListFromStorage();
-
-    },
-    setWatchList: function(watchlist){
-
-    	setWatchListToStorage();
+    	getWatchListFromStorage(callback);
 
     },
-    getLog: function(){
+    setWatchList: function(watchlist, callback){
 
-    	return getLogFromStorage();
+    	setWatchListToStorage(watchlist, callback);
 
     },
-    setLog:function(domain, minutestamp){
+    getLog: function(domain, callback){
 
-    	setLogToStorage(domain, minutestamp);
+    	getLogFromStorage(domain, callback);
+
+    },
+    setLog:function(domain, minutestamp, callback){
+
+    	setLogToStorage(domain, minutestamp, callback);
 
     }
 }
 
-//urls to track
-//log of visits
+function getWatchListFromStorage(callback){
 
-function getWatchListFromStorage(){
+	chrome.storage.local.get("watchlist", function(details){
 
+		callback(details.watchlist);
 
-	return ["watch","list"];
-
-}
-
-
-function getLogFromStorage(){
-
-
-	return ["log","list"];
+	});
 
 }
 
-function setWatchListToStorage(){
+
+function getLogFromStorage(domain, callback){
+
+	chrome.storage.local.get(domain, function (result) {
+
+		callback(result[domain]);
+
+	});
+
+}
+
+function setWatchListToStorage(watchlist, callback){
 
 	console.log("setting watchlist to storage");
 
-}
+	var list = {};
 
-function setLogToStorage(domain, minutestamp){
+	list["watchlist"] = watchlist;
 
-	console.log("setting log to storage", domain, minutestamp);
-	// console.log($.type(domain));
-	// console.log($.type("www.reddit.com"));
-	// var stringDomain = domain.toString();
-	var log = {};
+	chrome.storage.local.set(list, function(){
 
-	log[domain] = [minutestamp];
-
-	chrome.storage.local.set(log, function(){
-
-			chrome.storage.local.get(domain, function (result) {
-
-				console.log(result);
-
-			});
+		callback();
 
 	});
 
 
+}
+
+function setLogToStorage(domain, minutestamp, callback){
 
 
+	getLogFromStorage(domain, function(domainlog){
+
+		var newLog = {};
+
+		if(domainlog){
+
+			domainlog.push(minutestamp);
+
+			domainlog = $.unique(domainlog);
+
+			console.log(domainlog, minutestamp);
+
+
+			newLog[domain] = domainlog;
+
+			chrome.storage.local.set(newLog, function(){
+				callback();
+			});
+
+		}else{
+
+			newLog[domain] = [minutestamp];
+
+			chrome.storage.local.set(newLog, function(){
+				callback();
+			});
+
+		}
+
+	});
 
 
 

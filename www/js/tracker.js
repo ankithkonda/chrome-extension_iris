@@ -1,8 +1,12 @@
 module.exports = {
-    watch: function(urls, callback){
+    watch: function(callback){
 
-        urlsToTrack = urls;
-        start(callback);
+
+        storage.getWatchList(function(watchlist){
+            urlsToTrack = watchlist;
+            start(callback);
+        })
+
 
     },
     addURLs: function(urls){
@@ -23,7 +27,7 @@ function start(callback){
 
             var main_frame = details.type == "main_frame" ? true : false;
 
-            if((tabid && (tabid > 0)) || main_frame){
+            if((tabid && (tabid > 0)) || (main_frame && (tabid && (tabid >= 0)))){
 
                 chrome.tabs.get(tabid, function(tab){
 
@@ -44,6 +48,7 @@ function start(callback){
                 })
 
             }
+
 
         },
         {urls: ["<all_urls>"]},
@@ -80,13 +85,19 @@ function updateLog(tab, callback){
         var minutes = Math.floor(seconds/60);
         //var minutestime = new Date(minutes*60*1000);
 
-        storage.setLog(domain, minutes);
+        storage.setLog(domain, minutes, function(){
+
+            storage.getLog(domain, function(domainlog){
+                console.log(domain, domainlog);
+            });
+
+        });
 
         //console.log(domain,'\n',time,'\n',timestamp,'\n',seconds,'\n', minutes, '\n',minutestime);
         //console.log("expected :", "Sat Oct 08 2016 23:41:33 GMT+1000 (AEST)");
         //console.log("got :", new Date(24598901*60*1000), 24598901);
         //console.log("timestamp :",Date(timestamp*1000), timestamp);
-       // callback({"status":"added to log", "tab":tab})
+        //callback({"status":"added to log", "tab":tab})
 
     }
 

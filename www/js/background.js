@@ -5,12 +5,16 @@ global.storage = require("./storage.js");
 var tracker = require("./tracker.js");
 
 
+storage.setWatchList(["www.reddit.com", "www.macrumors.com"], watchlistHasSet);
 
 
+function watchlistHasSet(){
 
+	tracker.watch(seen);
+
+}
 
 //tracker.watch(storage.getWatchList(), seen);
-tracker.watch(["www.reddit.com", "www.macrumors.com"], seen);
 
 function seen(details){
 
