@@ -1,7 +1,7 @@
 // As JQuery will be used for majority of our JS code, you can attach it to the global scope
 // Along with helpers such as mathJS and underscoreJS
 global.$ = global.jQuery = require("jquery");
-global._ = require("underscore");
+global._ = require("lodash");
 global.storage = require("./storage.js");
 // Any special library you want to use can be installed through npm and imported into the specifc files.
 // Most of these may not need variables attached in order to use them, see their documentation.
@@ -57,11 +57,8 @@ $(document).ready(function(){
 
 	$(".testC_button").click(function(event){
 
-		var urls = {"urls":["www.news.com.au", "www.uq.edu.au"]};
+		storage.remove("watchlist", ["www.reddit.com"], function(){
 
-		chrome.storage.local.set(urls, function(){
-
-				$(".container").append(JSON.stringify(urls));
 
 		});
 
@@ -69,13 +66,12 @@ $(document).ready(function(){
 
 	$(".clear_button").click(function(event){
 
-		
-	chrome.storage.local.clear(function() {
-	    var error = chrome.runtime.lastError;
-	    if (error) {
-	        console.error(error);
-	    }
-	});
+		chrome.storage.local.clear(function() {
+		    var error = chrome.runtime.lastError;
+		    if (error) {
+		        console.error(error);
+		    }
+		});
 
 	});
 

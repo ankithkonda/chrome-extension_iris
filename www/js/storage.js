@@ -1,3 +1,5 @@
+
+
 module.exports = {
 
     getWatchList: function(callback){
@@ -27,12 +29,17 @@ module.exports = {
     },
     get: function(key, callback){
 
-    	getStorage(key, callback);
+    	getFromStorage(key, callback);
 
     },
     set: function(key, items,  callback){
 
-    	setStorage(key, items, callback);
+    	setToStorage(key, items, callback);
+
+    },
+    remove: function(key, items, callback){
+
+    	removeFromStorage(key, items, callback);
 
     }
 }
@@ -111,8 +118,7 @@ function setLogToStorage(domain, minutestamp, callback){
 
 }
 
-
-function getStorage(key, callback){
+function getFromStorage(key, callback){
 
 	chrome.storage.local.get(key, function(items){
 
@@ -122,7 +128,7 @@ function getStorage(key, callback){
 
 }
 
-function setStorage(key, items, callback){
+function setToStorage(key, items, callback){
 
 	chrome.storage.local.get(key, function(existingItems){
 
@@ -143,6 +149,37 @@ function setStorage(key, items, callback){
 				callback();
 
 			});
+		}
+
+	})
+
+}
+
+function removeFromStorage(key, items, callback){
+
+
+	chrome.storage.local.get(key, function(existingItems){
+
+		if(existingItems[key]){
+
+			var existing = existingItems[key];
+
+			_.pullAll(existing, items);
+			
+			var newItems = {};
+			
+			newItems[key] = existing;
+
+			chrome.storage.local.set(newItems, function(){
+
+				callback();
+
+			});
+
+		}else{
+
+				callback();
+
 		}
 
 	})
