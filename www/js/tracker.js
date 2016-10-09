@@ -1,15 +1,18 @@
 module.exports = {
     watch: function(callback){
 
-
         storage.getWatchList(function(watchlist){
+
             urlsToTrack = watchlist;
             start(callback);
+
         })
 
 
     },
-    addURLs: function(urls){
+    update: function(newValue){
+
+        urlsToTrack = newValue;
 
     }
 
@@ -93,11 +96,6 @@ function updateLog(tab, callback){
 
         });
 
-        //console.log(domain,'\n',time,'\n',timestamp,'\n',seconds,'\n', minutes, '\n',minutestime);
-        //console.log("expected :", "Sat Oct 08 2016 23:41:33 GMT+1000 (AEST)");
-        //console.log("got :", new Date(24598901*60*1000), 24598901);
-        //console.log("timestamp :",Date(timestamp*1000), timestamp);
-        //callback({"status":"added to log", "tab":tab})
 
     }
 

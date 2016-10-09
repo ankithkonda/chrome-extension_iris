@@ -19,6 +19,21 @@ module.exports = {
 
     	setLogToStorage(domain, minutestamp, callback);
 
+    },
+    watch: function(key, callback){
+
+    	watchStorage(key, callback);
+
+    },
+    get: function(key, callback){
+
+    	getStorage(key, callback);
+
+    },
+    set: function(key, items,  callback){
+
+    	setStorage(key, items, callback);
+
     }
 }
 
@@ -94,7 +109,57 @@ function setLogToStorage(domain, minutestamp, callback){
 
 	});
 
+}
 
 
+function getStorage(key, callback){
+
+	chrome.storage.local.get(key, function(items){
+
+		key ? callback(items[key]) : callback(items);
+
+	})
 
 }
+
+function setStorage(key, items, callback){
+
+	chrome.storage.local.get(key, function(existingItems){
+
+		if(existingItems[key]){
+
+			var newItems = _.union(existingItems[key], items);
+
+			setWatchListToStorage(newItems, function(){
+
+				callback();
+
+			});
+
+		}else{
+
+			setWatchListToStorage(items, function(){
+
+				callback();
+
+			});
+		}
+
+	})
+
+}
+
+function watchStorage(key, callback){
+
+	console.log(key);
+
+	chrome.storage.onChanged.addListener(function(changes, areaName){
+
+		if(changes[key]){
+			callback(changes[key].newValue, changes[key].oldValue);
+		}
+
+	});
+
+}
+
