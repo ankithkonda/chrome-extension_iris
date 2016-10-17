@@ -78,8 +78,6 @@ function updateLog(tab, callback){
     var trackable = _.includes(urlsToTrack, domain);
 
 
-
-
     if(trackable){
 
         var timestamp = _.now();
