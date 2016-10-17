@@ -95,7 +95,7 @@ function setLogToStorage(domain, minutestamp, callback){
 
 			domainlog = $.unique(domainlog);
 
-			console.log(domainlog, minutestamp);
+			//console.log(domainlog, minutestamp);
 
 
 			newLog[domain] = domainlog;

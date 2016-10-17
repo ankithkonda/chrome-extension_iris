@@ -73,9 +73,20 @@ function start(callback){
 
 function updateLog(tab, callback){
 
-    var domain = extractDomain(tab.url);
+    var urlList = extractUrls(tab.url);
+    var trackable = false;
 
-    var trackable = _.includes(urlsToTrack, domain);
+    var url = "";
+    $.each(urlsToTrack, function(ind, toTrackUrl){
+
+        console.log(urlList, toTrackUrl);
+
+        if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1))){
+            url = toTrackUrl;
+            trackable = true;
+        }
+
+    });
 
 
     if(trackable){
@@ -86,10 +97,10 @@ function updateLog(tab, callback){
         var minutes = Math.floor(seconds/60);
         //var minutestime = new Date(minutes*60*1000);
 
-        storage.setLog(domain, minutes, function(){
+        storage.setLog(url, minutes, function(){
 
-            storage.getLog(domain, function(domainlog){
-                console.log(domain, domainlog);
+            storage.getLog(url, function(domainlog){
+                //console.log(url, domainlog);
             });
 
         });
@@ -98,19 +109,33 @@ function updateLog(tab, callback){
     }
 
 
-
-
 }
 
 
-function extractDomain(url) {
 
-    var domain;
+function extractUrls(url) {
 
-    var domain = url.indexOf("://") > -1 ? url.split('/')[2] : url.split('/')[0];
+    var prom = [];
 
-    domain = domain.split(':')[0];
+    var build = "";
 
-    return domain;
+    for (var i = 2; i < (url.split("/").length-1); i++) {
+
+
+        if(i > 2){
+
+            build += "/"+url.split('/')[i];
+
+        }else{
+
+            build += url.split('/')[i];
+
+        }
+
+        prom.push(build);
+
+    }
+
+    return prom;
 
 }

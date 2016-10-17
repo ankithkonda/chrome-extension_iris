@@ -3,6 +3,7 @@
 global.$ = global.jQuery = require("jquery");
 global._ = require("lodash");
 global.storage = require("./storage.js");
+global.d3 = require("d3");
 // Any special library you want to use can be installed through npm and imported into the specifc files.
 // Most of these may not need variables attached in order to use them, see their documentation.
 require('bootstrap');
@@ -31,115 +32,187 @@ $(document).ready(function(){
 
 		$(".urlToAdd").attr("value", extractDomain(activeTab.url));
 
-		extractDomainB(activeTab.url);
-
-
   	});
 
+	$(".addURLButton").click(function(e){
+
+		e.preventDefault();
+
+		var url = $(".urlToAdd").val();
+
+		storage.set("watchlist", [url], function(){
+
+			updatePopup();
+
+		});
+
+	});
+
+	updatePopup();
+
+
+	function updatePopup(){
+
+
+		storage.get("watchlist", function(items){
+
+			$(".watchlist").find("pre").html(JSON.stringify(items,null,2));
+			if(items){
+				loadLog(items);
+			}
+		});
 
 
 
-	// storage.get("watchlist", function(items){
 
-	// 	$(".watchlist").find("pre").html(JSON.stringify(items,null,2));
-	// 	loadLog(items);
+		function loadLog(items){
+			var allLog = {};
+			var data = [];
+			var itemslen = items.length;
+			var currentlen = 0;
+			$.each(items,function(ind, obj){
 
-	// });
+				storage.get(obj, function(items){
+					var pie = {};
+
+					currentlen++;
+
+					allLog[obj] = items;
+					pie["url"] = obj;
+					pie["minutes"] = items.length;
+
+					data.push(pie);
+					if(currentlen == itemslen){
+
+						$(".log").find("pre").html(JSON.stringify(allLog,null,2));
+						generatePie(data);
+						
+					}
+				});
+
+			});
+
+		}
 
 
+		function generatePie(dat){
 
 
-	// function loadLog(items){
-	// 	var allLog = {};
+				var width = 960,
+			    height = 500,
+			    radius = Math.min(width, height) / 2;
+
+			var color = d3.scale.category10();
+
+			var arc = d3.svg.arc()
+			    .outerRadius(radius - 10)
+			    .innerRadius(0);
+
+			var labelArc = d3.svg.arc()
+			    .outerRadius(radius - 40)
+			    .innerRadius(radius - 40);
+
+			var pie = d3.layout.pie()
+			    .sort(null)
+			    .value(function(d) { return d.minutes; });
+
+			var svg = d3.select("body").append("svg")
+			    .attr("width", width)
+			    .attr("height", height)
+			  .append("g")
+			    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+			 //data = JSON.parse(dat);
+
+			 data = $.parseJSON(JSON.stringify(dat));
+
+			// parseJSON(JSON.stringify(data));
+
+			console.log(data);
+			  var g = svg.selectAll(".arc")
+			      .data(pie(data))
+			    .enter().append("g")
+			      .attr("class", "arc");
+
+			  g.append("path")
+			      .attr("d", arc)
+			      .style("fill", function(d) { return color(d.data.url); });
+
+			  g.append("text")
+			      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+			      .attr("dy", ".35em")
+			      .text(function(d) { return d.data.url; });
+			
+
+			function type(d) {
+			  d.minutes = +d.minutes;
+			  return d;
+			}
+
+
+		}
+
 		
-	// 	var itemslen = items.length;
-	// 	var currentlen = 0;
-	// 	$.each(items,function(ind, obj){
 
-	// 		storage.get(obj, function(items){
-	// 			currentlen++;
 
-	// 			allLog[obj] = items;
-	// 			if(currentlen == itemslen){
-
-	// 				$(".log").find("pre").html(JSON.stringify(allLog,null,2));
-
-					
-	// 			}
-	// 		});
-
-	// 	});
-
-	// }
-
-	// // setInterval(function(){
-	// // 	chrome.storage.local.get("tracked_urls", function(items){
-
-	// // 		$(".tracked").html(JSON.stringify(items));
-
-	// // 	});
-
-	// // }, 500);
-	// // 
-	// // 
+	}
 
 
 
+	$(".testA_button").click(function(event){
+
+			console.log("button a pressed");
+			storage.get("watchlist", function(items){
+
+				$(".printarea").html("Get Current Watchlist"+"<br><br>"+JSON.stringify(items));
 
 
-	// $(".testA_button").click(function(event){
+			})
 
-	// 		console.log("button a pressed");
-	// 		storage.get("watchlist", function(items){
+				storage.get("watchlist", function(items){
 
-	// 			$(".printarea").html("Get Current Watchlist"+"<br><br>"+JSON.stringify(items));
+		console.log("red");
 
-
-	// 		})
-
-	// 			storage.get("watchlist", function(items){
-
-	// 	console.log("red");
-
-	// 	$.each(items, function(ind, obj){
+		$.each(items, function(ind, obj){
 
 
-	// 		storage.get(obj, function(items){
+			storage.get(obj, function(items){
 
-	// 			console.log(obj);
+				console.log(obj);
 
-	// 			console.log($("."+obj).html());
+				console.log($("."+obj).html());
 
 			
-	// 		})
+			})
 
 
-	// 	})
+		})
 
 
-	// });
+	});
 
-	// });
+	});
 
-	// $(".testB_button").click(function(event){
+	$(".testB_button").click(function(event){
 
-	// 	console.log("set");
-	// 	storage.set("watchlist", ["www.reddit.com", "www.macrumors.com"], function(){
-
-
-	// 	});
-
-	// });
-
-	// $(".testC_button").click(function(event){
-
-	// 	storage.remove("watchlist", ["www.reddit.com"], function(){
+		console.log("set");
+		storage.set("watchlist", ["www.reddit.com", "www.macrumors.com"], function(){
 
 
+		});
 
-	// 	});
+	});
 
-	// });
+	$(".testC_button").click(function(event){
+
+		storage.remove("watchlist", ["www.reddit.com"], function(){
+
+
+
+		});
+
+	});
 
 	$(".clear_button").click(function(event){
 
@@ -154,18 +227,6 @@ $(document).ready(function(){
 
 });
 
-function extractDomainA(url) {
-
-    var domain;
-
-    var domain = url.indexOf("://") > -1 ? url.split('/')[2] : url.split('/')[0];
-
-    domain = domain.split(':')[0];
-
-    return domain;
-
-}
-
 function extractDomain(url) {
 
     var domain;
@@ -177,46 +238,6 @@ function extractDomain(url) {
    	console.log("GA");
 
     return domain;
-
-}
-
-
-
-function extractDomainB(url) {
-
-    var domain;
-
-    var domain = url.indexOf("://") > -1 ? url.split('/')[2] : url.split('/')[0];
-
-    domain = domain.split(':')[0];
-
-    var prom = [];
-
-    var build = "";
-
-    for (var i = 2; i < (url.split("/").length-1); i++) {
-
-
-    	if(i > 2){
-
-    		build += "/"+url.split('/')[i];
-    		prom.push(build+"/");
-
-    	}else{
-
-    		build += url.split('/')[i];
-    		prom.push(build);
-
-
-    	}
-
-    	//prom.push(build+"/");
-
-    }
-
-    $(".test").html((url.split("/").length-1)+", "+JSON.stringify(prom,null,2));
-
-   //	$(".test").html(url.indexOf("/")+", "+url.split('/')[4]+", "+url.split('/')[3]+", "+url.split('/')[2]);
 
 }
 
