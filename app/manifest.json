@@ -10,7 +10,7 @@
   },
   "browser_action": {
     "default_icon": "icon.png",
-    "default_title": "Iris: URL Tracker",      // optional; shown in tooltip
+    "default_title": "Iris: URL Tracker",
     "default_popup": "popup.html" 
   },
   "background": {
