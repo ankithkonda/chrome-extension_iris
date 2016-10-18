@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Iris URL tracker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tracks the number of times a URL has been accessed",
   "author": "Ankith Konda <ankith.konda@gmail.com>",
   "icons": {
