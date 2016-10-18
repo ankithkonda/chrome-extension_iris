@@ -37,9 +37,14 @@ module.exports = {
     	setToStorage(key, items, callback);
 
     },
-    remove: function(key, items, callback){
+    remove: function(key, callback){
 
-    	removeFromStorage(key, items, callback);
+    	removeFromStorage(key, callback);
+
+    },
+    removeItem: function(key, items, callback){
+
+    	removeItemsFromKey(key, items, callback);
 
     }
 }
@@ -155,10 +160,22 @@ function setToStorage(key, items, callback){
 
 }
 
-function removeFromStorage(key, items, callback){
+function removeFromStorage(key, callback){
+
+	chrome.storage.local.remove(key, function(){
+
+		callback();
+
+	});
+
+}
+
+function removeItemsFromKey(key, items, callback){
 
 
 	chrome.storage.local.get(key, function(existingItems){
+
+		console.log(existing);
 
 		if(existingItems[key]){
 
@@ -170,6 +187,8 @@ function removeFromStorage(key, items, callback){
 			
 			newItems[key] = existing;
 
+			console.log(newItems);
+
 			chrome.storage.local.set(newItems, function(){
 
 				callback();
@@ -178,11 +197,12 @@ function removeFromStorage(key, items, callback){
 
 		}else{
 
-				callback();
+			callback();
 
 		}
 
 	})
+
 
 }
 

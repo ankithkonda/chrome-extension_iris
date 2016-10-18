@@ -79,9 +79,7 @@ function updateLog(tab, callback){
     var url = "";
     $.each(urlsToTrack, function(ind, toTrackUrl){
 
-        //console.log(urlList, toTrackUrl);
-
-        if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1))){
+        if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1)) || _.includes(urlList, "www."+toTrackUrl)){
             url = toTrackUrl;
             trackable = true;
         }
@@ -152,7 +150,7 @@ function extractUrls(url) {
 
 
 
-    console.log(prom);
+   // console.log(prom);
 
     return prom;
 

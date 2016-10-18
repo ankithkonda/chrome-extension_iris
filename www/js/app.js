@@ -11,6 +11,9 @@ require('twbs-pagination');
 require("blueimp-file-upload");
 require("jquery-knob");
 
+var Handlebars = require('handlebars');
+
+
 
 // Files that you create can also be included in any JS file, 
 // however their path has to be specified as they are not part of NPM
@@ -54,13 +57,23 @@ $(document).ready(function(){
 	function updatePopup(){
 
 
+		$(".watchlist").find("pre").html("");
+		$(".log").find("pre").html("");
+		$(".pie").html("");
+		$(".removeclear").html("");
+
+
+
 		storage.get("watchlist", function(items){
 
-			$(".watchlist").find("pre").html(JSON.stringify(items,null,2));
 			if(items){
-				console.log(items);
-				loadLog(items);
+				if(items.length > 0){
+					$(".watchlist").find("pre").html(JSON.stringify(items,null,2));
+					loadLog(items);
+					addRemoveURLlist(items);
+				}
 			}
+
 		});
 
 
@@ -73,31 +86,84 @@ $(document).ready(function(){
 			var currentlen = 0;
 			$.each(items,function(ind, obj){
 
+
+
 				storage.get(obj, function(items){
-					var pie = {};
+
 
 					currentlen++;
 
 					allLog[obj] = items;
-					pie["url"] = obj;
-					pie["minutes"] = items.length;
 
-					data.push(pie);
+					if(items){
+
+						var pie = {};
+						pie["url"] = obj;
+						pie["minutes"] = items.length;
+						data.push(pie);
+
+					}
+
 					if(currentlen == itemslen){
 
 						$(".log").find("pre").html(JSON.stringify(allLog,null,2));
 						generatePie(data);
 						
 					}
+					
 				});
 
 			});
 
 		}
 
+		function addRemoveURLlist(items){
+
+
+			var source =	'<select id="url_to_remove_select">'+
+								  '{{#.}}<option value="{{.}}">{{.}}</option>{{/.}}'+
+								'</select><button type="button" class="btn btn-warning btn-sm remove_button">Remove URL</button><button type="button" class="clear_button btn btn-danger btn-sm">Clear all</button>';
+
+		    var template = Handlebars.compile(source);
+
+		    var result = template(items);
+
+		    $(".removeclear").html(result);
+
+		    $(".remove_button").click(function(e){
+
+				e.preventDefault();
+
+				var url = $("#url_to_remove_select").val();
+
+				console.log(url);
+
+				storage.removeItem("watchlist", [url], function(){
+
+					updatePopup();
+
+				});
+
+			});
+
+		    $(".clear_button").click(function(event){
+
+				chrome.storage.local.clear(function() {
+				    var error = chrome.runtime.lastError;
+				    if (error) {
+				        console.error(error);
+				    }
+				    updatePopup();
+
+				});
+
+			});
+			
+
+		}
+
 
 		function generatePie(dat){
-
 
 				var width = 960,
 			    height = 500,
@@ -117,7 +183,7 @@ $(document).ready(function(){
 			    .sort(null)
 			    .value(function(d) { return d.minutes; });
 
-			var svg = d3.select("body").append("svg")
+			var svg = d3.select(".pie").append("svg")
 			    .attr("width", width)
 			    .attr("height", height)
 			  .append("g")
@@ -173,7 +239,6 @@ $(document).ready(function(){
 
 				storage.get("watchlist", function(items){
 
-		console.log("red");
 
 		$.each(items, function(ind, obj){
 
@@ -215,18 +280,13 @@ $(document).ready(function(){
 
 	});
 
-	$(".clear_button").click(function(event){
+	
 
-		chrome.storage.local.clear(function() {
-		    var error = chrome.runtime.lastError;
-		    if (error) {
-		        console.error(error);
-		    }
-		});
 
-	});
 
 });
+
+
 
 function extractDomain(url) {
 
