@@ -79,7 +79,7 @@ function updateLog(tab, callback){
     var url = "";
     $.each(urlsToTrack, function(ind, toTrackUrl){
 
-        console.log(urlList, toTrackUrl);
+        //console.log(urlList, toTrackUrl);
 
         if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1))){
             url = toTrackUrl;
@@ -119,22 +119,40 @@ function extractUrls(url) {
 
     var build = "";
 
-    for (var i = 2; i < (url.split("/").length-1); i++) {
 
+    if(url.split("/").length <= 4){
 
-        if(i > 2){
-
-            build += "/"+url.split('/')[i];
-
-        }else{
-
-            build += url.split('/')[i];
-
-        }
+        build = url.split("/")[2];
 
         prom.push(build);
 
+        build += "/"+url.split("/")[3];
+
+        prom.push(build);
+
+    }else{
+
+        for (var i = 2; i < (url.split("/").length); i++) {
+
+            if(i > 2){
+
+                build += "/"+url.split('/')[i];
+            }else{
+
+                build += url.split('/')[i];
+
+            }
+
+            prom.push(build);
+
+        }
+
+
     }
+
+
+
+    console.log(prom);
 
     return prom;
 

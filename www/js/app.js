@@ -58,6 +58,7 @@ $(document).ready(function(){
 
 			$(".watchlist").find("pre").html(JSON.stringify(items,null,2));
 			if(items){
+				console.log(items);
 				loadLog(items);
 			}
 		});
