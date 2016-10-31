@@ -17,7 +17,7 @@ module.exports = {
     	getLogFromStorage(domain, callback);
 
     },
-    setLog:function(domain, minutestamp, callback){
+    setLog: function(domain, minutestamp, callback){
 
     	setLogToStorage(domain, minutestamp, callback);
 

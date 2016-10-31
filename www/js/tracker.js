@@ -1,3 +1,5 @@
+var _url = require('url');
+
 module.exports = {
     watch: function(callback){
 
@@ -19,6 +21,9 @@ module.exports = {
 }
 
 var urlsToTrack = [];
+
+const watchlistKey = "watchlist";
+const logKey = "log";
 
 function start(callback){
 
@@ -73,50 +78,62 @@ function start(callback){
 
 function updateLog(tab, callback){
 
-    var urlList = extractUrls(tab.url);
-    var trackable = false;
+    // var urlList = extractUrls(tab.url);
+    // var trackable = false;
 
-    var url = "";
-    $.each(urlsToTrack, function(ind, toTrackUrl){
+    // var url = "";
+    // $.each(urlsToTrack, function(ind, toTrackUrl){
 
-        if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1)) || _.includes(urlList, "www."+toTrackUrl)){
-            url = toTrackUrl;
-            trackable = true;
-        }
+    //     if(_.includes(urlList, toTrackUrl) || _.includes(urlList, toTrackUrl+"/") || _.includes(urlList, toTrackUrl.substring(0, toTrackUrl.length - 1)) || _.includes(urlList, "www."+toTrackUrl)){
+    //         url = toTrackUrl;
+    //         trackable = true;
+    //     }
+
+    // });
+
+
+    var domainDetails = extractDetails(tab.url);
+
+
+   // if(trackable){
+
+    var timestamp = _.now();
+    var time = new Date(timestamp);
+    var seconds = Math.floor(time/1000);
+    var minutes = Math.floor(seconds/60);
+    //var minutestime = new Date(minutes*60*1000);
+    
+   // storage.set("watchlist", )
+
+
+    storage.setLog(url, minutes, function(){
+
+        storage.getLog(url, function(domainlog){
+            //console.log(url, domainlog);
+        });
 
     });
 
-
-    if(trackable){
-
-        var timestamp = _.now();
-        var time = new Date(timestamp);
-        var seconds = Math.floor(time/1000);
-        var minutes = Math.floor(seconds/60);
-        //var minutestime = new Date(minutes*60*1000);
-
-        storage.setLog(url, minutes, function(){
-
-            storage.getLog(url, function(domainlog){
-                //console.log(url, domainlog);
-            });
-
-        });
-
-
-    }
+   // }
 
 
 }
 
+function extractDetails(url){
 
+    var domain = null;
+
+   // console.log("hek: ",_url.parse(url, false, false));
+
+    return _url.parse(url, false, false);
+   
+}
 
 function extractUrls(url) {
 
     var prom = [];
 
     var build = "";
-
 
     if(url.split("/").length <= 4){
 
@@ -147,10 +164,6 @@ function extractUrls(url) {
 
 
     }
-
-
-
-   // console.log(prom);
 
     return prom;
 
